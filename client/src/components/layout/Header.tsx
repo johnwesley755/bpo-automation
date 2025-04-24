@@ -26,9 +26,7 @@ export default function Header() {
             <Button variant="ghost" onClick={() => navigate("/dashboard")}>
               Dashboard
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/settings")}>
-              Settings
-            </Button>
+        
           </nav>
           <ModeToggle />
           <Button 

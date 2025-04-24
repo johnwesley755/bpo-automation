@@ -37,7 +37,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-black">
       <Header />
       <main className="container mx-auto p-4 pt-20">
         <motion.div

@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Phone } from "lucide-react";
 import PromptGenerator from "./PromptGenerator";
 import { blandService } from "@/services/blandService";
 import { Call } from "@/types/call.types";
@@ -37,6 +39,7 @@ interface CallFormProps {
 export default function CallForm({ onCallInitiated }: CallFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [promptType, setPromptType] = useState<"manual" | "auto">("manual");
+  const [countryCode, setCountryCode] = useState("+1");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -87,8 +90,11 @@ export default function CallForm({ onCallInitiated }: CallFormProps) {
   }
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-6">New Call</h2>
+    <div className="bg-card rounded-lg p-6 shadow-sm border">
+      <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+        <Phone className="h-5 w-5 text-primary" />
+        New Call
+      </h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
@@ -98,7 +104,11 @@ export default function CallForm({ onCallInitiated }: CallFormProps) {
               <FormItem>
                 <FormLabel>User Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="John Doe" {...field} />
+                  <Input 
+                    placeholder="John Doe" 
+                    className="bg-background" 
+                    {...field} 
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -111,20 +121,50 @@ export default function CallForm({ onCallInitiated }: CallFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Phone Number</FormLabel>
-                <FormControl>
-                  <Input placeholder="+1234567890" {...field} />
-                </FormControl>
+                <div className="flex gap-2">
+                  <Select 
+                    defaultValue="+1" 
+                    onValueChange={(value) => setCountryCode(value)}
+                  >
+                    <SelectTrigger className="w-[110px] bg-background">
+                      <SelectValue placeholder="Code" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="+1">+1 (US)</SelectItem>
+                      <SelectItem value="+44">+44 (UK)</SelectItem>
+                      <SelectItem value="+91">+91 (IN)</SelectItem>
+                      <SelectItem value="+61">+61 (AU)</SelectItem>
+                      <SelectItem value="+86">+86 (CN)</SelectItem>
+                      <SelectItem value="+49">+49 (DE)</SelectItem>
+                      <SelectItem value="+33">+33 (FR)</SelectItem>
+                      <SelectItem value="+81">+81 (JP)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormControl>
+                    <Input 
+                      placeholder="Phone number" 
+                      className="bg-background flex-1"
+                      value={field.value.startsWith("+") ? field.value.substring(countryCode.length) : field.value}
+                      onChange={(e) => {
+                        // Only allow numbers
+                        const value = e.target.value.replace(/[^\d]/g, '');
+                        field.onChange(countryCode + value);
+                      }}
+                    />
+                  </FormControl>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
           />
           
-          <div className="space-y-4">
+          <div className="space-y-4 bg-background/50 p-4 rounded-md border">
             <Tabs 
               defaultValue="manual" 
               onValueChange={(value) => setPromptType(value as "manual" | "auto")}
+              className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-2 mb-4">
                 <TabsTrigger value="manual">Manual Prompt</TabsTrigger>
                 <TabsTrigger value="auto">Auto-Generate</TabsTrigger>
               </TabsList>
@@ -138,7 +178,7 @@ export default function CallForm({ onCallInitiated }: CallFormProps) {
                       <FormControl>
                         <Textarea 
                           placeholder="Enter the script for the call..." 
-                          className="min-h-32"
+                          className="min-h-32 bg-background"
                           {...field} 
                         />
                       </FormControl>
@@ -157,7 +197,7 @@ export default function CallForm({ onCallInitiated }: CallFormProps) {
                       <FormLabel>Generated Prompt</FormLabel>
                       <FormControl>
                         <Textarea 
-                          className="min-h-32"
+                          className="min-h-32 bg-background"
                           {...field} 
                         />
                       </FormControl>
@@ -169,7 +209,12 @@ export default function CallForm({ onCallInitiated }: CallFormProps) {
             </Tabs>
           </div>
           
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button 
+            type="submit" 
+            className="w-full font-semibold" 
+            disabled={isLoading}
+            size="lg"
+          >
             {isLoading ? "Initiating Call..." : "Start Call"}
           </Button>
         </form>

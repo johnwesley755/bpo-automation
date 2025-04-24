@@ -105,7 +105,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+    <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-black p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">BPO Automation</CardTitle>
